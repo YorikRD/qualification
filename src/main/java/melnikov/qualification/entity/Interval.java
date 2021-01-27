@@ -14,15 +14,17 @@ public class Interval implements Comparable {
     private LocalDateTime start;
     @Column(nullable = false)
     private LocalDateTime finish;
-
-    private Set<Integer> availableOnes = new HashSet<>();
+    @ManyToOne
+    private Party game;
+    @ManyToMany
+    private Set<Player> availableOnes = new HashSet<>();
 
     public Interval() {
     }
 
-    public Interval(LocalDateTime start, LocalDateTime finish, Human player1) {
+    public Interval(LocalDateTime start, LocalDateTime finish, Player player1) {
         availableOnes = new HashSet<>();
-        availableOnes.add(player1.getId());
+        availableOnes.add(player1);
         this.start = start;
         this.finish = finish;
     }
@@ -43,11 +45,19 @@ public class Interval implements Comparable {
         this.finish = finish;
     }
 
-    public Set<Integer> getAvailableOnes() {
+    public Party getGame() {
+        return game;
+    }
+
+    public void setGame(Party game) {
+        this.game = game;
+    }
+
+    public Set<Player> getAvailableOnes() {
         return availableOnes;
     }
 
-    public void setAvailableOnes(Set<Integer> availableOnes) {
+    public void setAvailableOnes(Set<Player> availableOnes) {
         this.availableOnes = availableOnes;
     }
 
@@ -63,17 +73,17 @@ public class Interval implements Comparable {
 
     public Interval intersect (Interval other){
         if (this.equals(null)|other.equals(null))return null;
-        Interval intesection = new Interval();
+        Interval intersection = new Interval();
         if(this.getStart().isBefore(other.getStart())) {
-            intesection.setStart(other.getStart());
-        }else intesection.setStart(this.getStart());
+            intersection.setStart(other.getStart());
+        }else intersection.setStart(this.getStart());
         if(this.getFinish().isBefore(other.getFinish())){
-            intesection.setFinish(this.getFinish());
-        } else intesection.setFinish(other.getFinish());
-        if (intesection.getStart().isAfter(intesection.getFinish())) return null;
-        intesection.getAvailableOnes().addAll(this.getAvailableOnes());
-        intesection.getAvailableOnes().addAll(other.getAvailableOnes());
-        return intesection;
+            intersection.setFinish(this.getFinish());
+        } else intersection.setFinish(other.getFinish());
+        if (intersection.getStart().isAfter(intersection.getFinish())) return null;
+
+
+        return intersection;
     }
 
     @Override

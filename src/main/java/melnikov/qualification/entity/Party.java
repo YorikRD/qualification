@@ -17,6 +17,8 @@ public class Party {
    private Master master;
    @ManyToMany(mappedBy = "games")
    private Set<Player> players = new HashSet<>();
+   @OneToMany(mappedBy = "game")
+   private Set<Interval> meetings = new HashSet<>();
 
    public String getTitle() {
       return title;
@@ -40,6 +42,22 @@ public class Party {
 
    public void setMaster(Master master) {
       this.master = master;
+   }
+
+   public Set<Player> getPlayers() {
+      return players;
+   }
+
+   public void setPlayers(Set<Player> players) {
+      this.players = players;
+   }
+
+   public Set<Interval> getMeetings() {
+      return meetings;
+   }
+
+   public void setMeetings(Set<Interval> meetings) {
+      this.meetings = meetings;
    }
 
    public int getId() {

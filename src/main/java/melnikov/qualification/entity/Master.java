@@ -18,4 +18,11 @@ public class Master extends Human {
         super.setEmail(email);
     }
 
+    public Player asPlayer(){
+        Player player= new Player();
+        player.setName(getName());
+        player.setEmail(getEmail());
+        return player;
+    }
+
 }
