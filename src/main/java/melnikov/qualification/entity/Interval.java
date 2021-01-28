@@ -9,13 +9,14 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+
 @Entity
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id",
         scope = Integer.class
 )
-public class Interval extends Identifier implements Comparable  {
+public class Interval extends Identifier implements Comparable {
 
     @Column(nullable = false)
     private LocalDateTime start;
@@ -71,20 +72,20 @@ public class Interval extends Identifier implements Comparable  {
     @Override
     public int compareTo(Object o) {
         Objects.requireNonNull(o);
-        if(start.isBefore(((Interval) o).getStart()))return -1;
-        if (start.equals(((Interval) o).start)&&finish.equals(((Interval) o).finish))return 0;
-        if (start.equals(((Interval) o).start)&&finish.isBefore(((Interval) o).getFinish())) return -1;
+        if (start.isBefore(((Interval) o).getStart())) return -1;
+        if (start.equals(((Interval) o).start) && finish.equals(((Interval) o).finish)) return 0;
+        if (start.equals(((Interval) o).start) && finish.isBefore(((Interval) o).getFinish())) return -1;
         return 1;
     }
 
 
-    public Interval intersect (Interval other){
-        if (this.equals(null)|other.equals(null))return null;
+    public Interval intersect(Interval other) {
+        if (this.equals(null) || other.equals(null)) return null;
         Interval intersection = new Interval();
-        if(this.getStart().isBefore(other.getStart())) {
+        if (this.getStart().isBefore(other.getStart())) {
             intersection.setStart(other.getStart());
-        }else intersection.setStart(this.getStart());
-        if(this.getFinish().isBefore(other.getFinish())){
+        } else intersection.setStart(this.getStart());
+        if (this.getFinish().isBefore(other.getFinish())) {
             intersection.setFinish(this.getFinish());
         } else intersection.setFinish(other.getFinish());
         if (intersection.getStart().isAfter(intersection.getFinish())) return null;

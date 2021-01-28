@@ -9,6 +9,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id",
+        scope = Integer.class
+)
 public class Party extends Identifier {
    @Column(nullable = false)
    private String title;

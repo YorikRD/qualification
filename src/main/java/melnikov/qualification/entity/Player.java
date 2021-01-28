@@ -10,6 +10,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id",
+        scope = Integer.class
+)
 public class Player extends Human{
     @ManyToMany()
     private Set<Party> games = new HashSet<>();

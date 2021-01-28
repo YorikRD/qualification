@@ -11,6 +11,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id",
+        scope = Integer.class
+)
 public class Master extends Human{
 
     @OneToMany(mappedBy = "master", fetch = FetchType.LAZY)
