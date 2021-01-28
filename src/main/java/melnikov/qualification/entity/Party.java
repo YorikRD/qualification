@@ -1,14 +1,15 @@
 package melnikov.qualification.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-public class Party {
-   @Id
-   @GeneratedValue(strategy = GenerationType.IDENTITY)
-   private int id;
+public class Party extends Identifier {
    @Column(nullable = false)
    private String title;
    @Column
@@ -58,9 +59,5 @@ public class Party {
 
    public void setMeetings(Set<Interval> meetings) {
       this.meetings = meetings;
-   }
-
-   public int getId() {
-      return id;
    }
 }

@@ -1,23 +1,20 @@
 package melnikov.qualification.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import org.apache.commons.validator.routines.EmailValidator;
 
 import javax.persistence.*;
 import java.util.Objects;
 
 @MappedSuperclass
-public abstract class Human {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+public abstract class Human extends Identifier {
+
     @Column(nullable = false)
     private String name;
     @Column(nullable = false)
     private String email;
 
-    public int getId() {
-        return id;
-    }
 
     public String getName() {
         return name;
@@ -40,4 +37,6 @@ public abstract class Human {
         }
         throw new IllegalArgumentException("This email address is not Valid");
     }
+
+
 }
