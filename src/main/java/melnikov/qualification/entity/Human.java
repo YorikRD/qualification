@@ -2,6 +2,7 @@ package melnikov.qualification.entity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import melnikov.qualification.exception.JoinedQualificationExeption;
 import org.apache.commons.validator.routines.EmailValidator;
 
 import javax.persistence.*;
@@ -35,7 +36,7 @@ public abstract class Human extends Identifier {
             this.email = email;
             return;
         }
-        throw new IllegalArgumentException("This email address is not Valid");
+        throw new JoinedQualificationExeption("This email address is not Valid");
     }
 
 
