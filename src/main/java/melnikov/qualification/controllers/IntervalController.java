@@ -73,15 +73,14 @@ public class IntervalController {
         }
     }
 
-    @PutMapping("/many/partybyid")
-    public Interval setpartybyidByID(@RequestParam int intervalID, @RequestParam int partyID){
+    @PutMapping("/many/addplayerandpartybyid")
+    public Interval addPlayerByID(@RequestParam int intervalID, @RequestParam int playerID, @RequestParam int partyID){
         Interval updated;
         try {
-            updated= service.addPartyBuyId(intervalID, partyID);
+            updated= service.addPlayerBuyId(intervalID, playerID,partyID);
         } catch (JoinedQualificationExeption e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         }
         return updated;
     }
-
 }

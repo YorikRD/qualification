@@ -3,6 +3,7 @@ package melnikov.qualification.services;
 
 import melnikov.qualification.entity.Interval;
 import melnikov.qualification.entity.Party;
+import melnikov.qualification.entity.Player;
 import melnikov.qualification.exception.JoinedQualificationExeption;
 import melnikov.qualification.repository.IntervalRepository;
 import melnikov.qualification.specifications.MasterSpecifications;
@@ -54,14 +55,20 @@ public class IntervalService {
         return repository.save(interval);
     }
 
-    public Interval addPartyBuyId(int intervalID, int partyID) {
+    public Interval addPlayerBuyId(int intervalID, int playerID, int patyId) {
         if (!repository.existsById(intervalID)) {
             throw new JoinedQualificationExeption("This Interval does not exists");
         }
-        Optional<Party> partyOptional = partyService.findById(partyID);
-        Party party = partyOptional.get();
+        Optional<Player> playerOptional = playerService.findById(playerID);
+        Player player = playerOptional.get();
+        Optional<Party> partyOptional=partyService.findById(patyId);
         Interval updated = repository.findById(intervalID).get();
-        updated.setGame(party);
+        Party party=partyOptional.get();
+        if (!party.hasPlayer(player)) throw new JoinedQualificationExeption("The player does not belongs to this party");
+        party.getMeetings().add(updated);
+        partyService.update(party);
+        updated.getAvailableOnes().add(player);
+
         return repository.save(updated);
     }
 
@@ -74,6 +81,8 @@ public class IntervalService {
     public Optional<Interval> findById(int id) {
         return repository.findById(id);
     }
+
+
 
 
 }

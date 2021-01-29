@@ -2,6 +2,7 @@ package melnikov.qualification.controllers;
 
 
 
+import melnikov.qualification.entity.Interval;
 import melnikov.qualification.entity.Party;
 import melnikov.qualification.exception.JoinedQualificationExeption;
 import melnikov.qualification.services.PartyService;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -73,10 +75,10 @@ public class PartyController {
        return updated;
     }
     @PutMapping("/many/addmasterbyid")
-    public Party addmasterByID(@RequestParam int playerID, @RequestParam int partyID){
+    public Party addmasterByID(@RequestParam int masterID, @RequestParam int partyID){
         Party updated;
         try {
-            updated= service.addMasterBuyId(playerID, partyID);
+            updated= service.addMasterBuyId(masterID, partyID);
         } catch (JoinedQualificationExeption e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         }
@@ -88,6 +90,24 @@ public class PartyController {
         try {
             service.delete(id);
         } catch (JoinedQualificationExeption e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+        }
+    }
+    @GetMapping("/fpmeeting")
+    public List<Interval> getPossibleMeetings(@RequestParam int partyID){
+        List<Interval> possibleMeetings;
+        try {
+            possibleMeetings=service.getPsMtByID(partyID);
+        } catch (JoinedQualificationExeption e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+        }
+        return possibleMeetings;
+    }
+    @GetMapping("/fpmeetingnotify")
+    public void generateAndSetToPartisipants(@RequestParam int partyID){
+        try {
+            service.crPsMtByIDNotify(partyID);
+        }catch (JoinedQualificationExeption e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         }
     }

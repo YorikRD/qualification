@@ -25,7 +25,7 @@ public class Party extends Identifier {
    private Master master;
    @ManyToMany(mappedBy = "games",fetch = FetchType.LAZY)
    private Set<Player> players = new HashSet<>();
-   @OneToMany(mappedBy = "game",fetch = FetchType.LAZY)
+   @OneToMany(fetch = FetchType.LAZY)
    private Set<Interval> meetings = new HashSet<>();
 
    public String getTitle() {
@@ -67,4 +67,10 @@ public class Party extends Identifier {
    public void setMeetings(Set<Interval> meetings) {
       this.meetings = meetings;
    }
+
+   public boolean hasPlayer(Player player){
+      if (players.contains(player))return  true;
+      return false;
+   }
+
 }

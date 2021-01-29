@@ -42,4 +42,20 @@ public class Master extends Human{
     public void setGames(Set<Party> games) {
         this.games = games;
     }
+
+    private String gamesStringRepr(){
+        StringBuilder sb = new StringBuilder();
+        for (Party game : games) {
+            sb.append(" The game: " +game.getTitle()+" info: "+game.getDescription());
+        }
+        return sb.toString();
+    }
+
+    @Override
+    public String toString() {
+        return "Name: "+super.getName()+
+                ", email: "+super.getEmail() +
+                " games=" + gamesStringRepr() +
+                '}';
+    }
 }

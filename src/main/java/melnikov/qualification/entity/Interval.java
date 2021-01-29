@@ -32,8 +32,6 @@ public class Interval extends Identifier implements Comparable {
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime finish;
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Party game;
     @ManyToMany(fetch = FetchType.LAZY)
     private Set<Player> availableOnes = new HashSet<>();
 
@@ -63,13 +61,6 @@ public class Interval extends Identifier implements Comparable {
         this.finish = finish;
     }
 
-    public Party getGame() {
-        return game;
-    }
-
-    public void setGame(Party game) {
-        this.game = game;
-    }
 
     public Set<Player> getAvailableOnes() {
         return availableOnes;
@@ -89,27 +80,45 @@ public class Interval extends Identifier implements Comparable {
     }
 
 
-    public Interval intersect(Interval other) {
-        if (this.equals(null) || other.equals(null)) return null;
+    public Interval intersect( Interval other) {
+        if (this.equals(null) || other.equals(null)) {
+            return null;
+        }
         Interval intersection = new Interval();
-        if (this.getStart().isBefore(other.getStart())) {
+//        intersection.setGame(other.getGame());
+        if (this.getStart().isBefore(other.getStart()))
+        {
             intersection.setStart(other.getStart());
-        } else intersection.setStart(this.getStart());
+        } else {
+            intersection.setStart(this.getStart());
+        }
         if (this.getFinish().isBefore(other.getFinish())) {
             intersection.setFinish(this.getFinish());
-        } else intersection.setFinish(other.getFinish());
-        if (intersection.getStart().isAfter(intersection.getFinish())) return null;
+        } else {
+            intersection.setFinish(other.getFinish());
+        }
+        if (intersection.getStart().isAfter(intersection.getFinish())) {
+            return null;
+        }
         Set<Player> summary = this.getAvailableOnes();
         summary.addAll(other.getAvailableOnes());
         intersection.setAvailableOnes(summary);
         return intersection;
     }
 
+    private String playerNames(){
+        StringBuilder sb = new StringBuilder("The names: ");
+        for (Player availableOne : availableOnes) {
+            sb.append(availableOne.getName()+", ");
+        }
+        return sb.toString();
+    }
+
     @Override
     public String toString() {
         return "Interval{" +
                 "start=" + start +
-                ", finish=" + finish +
+                ", finish=" + finish +" "+playerNames()+
                 '}';
     }
 }
