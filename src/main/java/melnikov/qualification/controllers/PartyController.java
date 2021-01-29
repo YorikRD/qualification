@@ -1,9 +1,10 @@
 package melnikov.qualification.controllers;
 
-import melnikov.qualification.entity.Player;
+
+
+import melnikov.qualification.entity.Party;
 import melnikov.qualification.exception.JoinedQualificationExeption;
-import melnikov.qualification.services.PlayerService;
-import melnikov.qualification.specifications.PlayerSpecifications;
+import melnikov.qualification.services.PartyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.repository.query.QueryCreationException;
@@ -14,49 +15,69 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/players")
-public class PlayerContoller {
+@RequestMapping("/parties")
+public class PartyController {
     @Autowired
-    private PlayerService service;
+    private PartyService service;
 
     @GetMapping("/{id}")
-    public Player getByID(@PathVariable int id){
+    public Party getByID(@PathVariable int id){
         System.out.println("the id for surch= "+id);
-        Optional<Player> optionalPlayer;
+        Optional<Party> optionalParty;
         try {
-            optionalPlayer=service.findById(id);
+            optionalParty=service.findById(id);
         } catch (JoinedQualificationExeption e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
-        return optionalPlayer.get();
+        return optionalParty.get();
     }
     @PostMapping
-    public Player addPlayer(@RequestBody Player player){
+    public Party addPlayer(@RequestBody Party party){
         try {
-            service.add(player);
+            service.add(party);
         } catch (QueryCreationException e){
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         }
-        return player;
+        return party;
     }
 
     @GetMapping
-    public Page<Player> getAll(@RequestParam int page,@RequestParam int size){
-        Page<Player> playerPage = null;
+    public Page<Party> getAll(@RequestParam int page, @RequestParam int size){
+        Page<Party> partyPage = null;
         try {
-            playerPage= service.getByPage(page, size);
+            partyPage= service.getByPage(page, size);
         }  catch (JoinedQualificationExeption e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
-        return playerPage;
+        return partyPage;
     }
 
     @PutMapping
-    public Player updatePlayer(@RequestBody Player player){
-        Player updated;
+    public Party updateParty(@RequestBody Party party){
+        Party updated;
         try {
-            updated = service.update(player);
+            updated = service.update(party);
         } catch (JoinedQualificationExeption e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+        }
+        return updated;
+    }
+    @PutMapping("/many/addplayerbyid")
+    public Party addPlayerByID(@RequestParam int playerID, @RequestParam int partyID){
+       Party updated;
+       try {
+           updated= service.addPlayerBuyId(playerID, partyID);
+       } catch (JoinedQualificationExeption e){
+           throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+       }
+       return updated;
+    }
+    @PutMapping("/many/addmasterbyid")
+    public Party addmasterByID(@RequestParam int playerID, @RequestParam int partyID){
+        Party updated;
+        try {
+            updated= service.addMasterBuyId(playerID, partyID);
+        } catch (JoinedQualificationExeption e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         }
         return updated;
@@ -70,7 +91,6 @@ public class PlayerContoller {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         }
     }
-
 
 
 

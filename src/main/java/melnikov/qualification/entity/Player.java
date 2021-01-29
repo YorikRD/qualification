@@ -1,10 +1,12 @@
 package melnikov.qualification.entity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,9 +18,9 @@ import java.util.Set;
         scope = Integer.class
 )
 public class Player extends Human{
-    @ManyToMany()
+    @ManyToMany(fetch = FetchType.LAZY)
     private Set<Party> games = new HashSet<>();
-    @ManyToMany(mappedBy = "availableOnes")
+    @ManyToMany(mappedBy = "availableOnes",fetch = FetchType.LAZY)
     private Set<Interval> events =new HashSet<>();
 
     public Set<Party> getGames() {

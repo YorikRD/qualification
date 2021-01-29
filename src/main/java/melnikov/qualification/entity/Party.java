@@ -1,6 +1,7 @@
 package melnikov.qualification.entity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
@@ -14,6 +15,7 @@ import java.util.Set;
         property = "id",
         scope = Integer.class
 )
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class Party extends Identifier {
    @Column(nullable = false)
    private String title;
@@ -21,9 +23,9 @@ public class Party extends Identifier {
    private String description;
    @ManyToOne(fetch =FetchType.LAZY)
    private Master master;
-   @ManyToMany(mappedBy = "games")
+   @ManyToMany(mappedBy = "games",fetch = FetchType.LAZY)
    private Set<Player> players = new HashSet<>();
-   @OneToMany(mappedBy = "game")
+   @OneToMany(mappedBy = "game",fetch = FetchType.LAZY)
    private Set<Interval> meetings = new HashSet<>();
 
    public String getTitle() {

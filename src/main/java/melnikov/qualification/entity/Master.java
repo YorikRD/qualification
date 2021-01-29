@@ -17,7 +17,6 @@ import java.util.Set;
         scope = Integer.class
 )
 public class Master extends Human{
-
     @OneToMany(mappedBy = "master", fetch = FetchType.LAZY)
     private Set<Party> games = new HashSet<>();
 

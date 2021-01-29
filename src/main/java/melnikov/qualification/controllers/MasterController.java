@@ -1,9 +1,8 @@
 package melnikov.qualification.controllers;
 
-import melnikov.qualification.entity.Player;
+import melnikov.qualification.entity.Master;
 import melnikov.qualification.exception.JoinedQualificationExeption;
-import melnikov.qualification.services.PlayerService;
-import melnikov.qualification.specifications.PlayerSpecifications;
+import melnikov.qualification.services.MasterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.repository.query.QueryCreationException;
@@ -14,48 +13,48 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/players")
-public class PlayerContoller {
+@RequestMapping("/masters")
+public class MasterController {
     @Autowired
-    private PlayerService service;
+    private MasterService service;
 
     @GetMapping("/{id}")
-    public Player getByID(@PathVariable int id){
+    public Master getByID(@PathVariable int id){
         System.out.println("the id for surch= "+id);
-        Optional<Player> optionalPlayer;
+        Optional<Master> optionalMaster;
         try {
-            optionalPlayer=service.findById(id);
+            optionalMaster=service.findById(id);
         } catch (JoinedQualificationExeption e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
-        return optionalPlayer.get();
+        return optionalMaster.get();
     }
     @PostMapping
-    public Player addPlayer(@RequestBody Player player){
+    public Master addPlayer(@RequestBody Master master){
         try {
-            service.add(player);
+            service.add(master);
         } catch (QueryCreationException e){
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         }
-        return player;
+        return master;
     }
 
     @GetMapping
-    public Page<Player> getAll(@RequestParam int page,@RequestParam int size){
-        Page<Player> playerPage = null;
+    public Page<Master> getAll(@RequestParam int page, @RequestParam int size){
+        Page<Master> masterPage = null;
         try {
-            playerPage= service.getByPage(page, size);
+            masterPage= service.getByPage(page, size);
         }  catch (JoinedQualificationExeption e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
-        return playerPage;
+        return masterPage;
     }
 
     @PutMapping
-    public Player updatePlayer(@RequestBody Player player){
-        Player updated;
+    public Master updateMaster(@RequestBody Master course){
+        Master updated;
         try {
-            updated = service.update(player);
+            updated = service.update(course);
         } catch (JoinedQualificationExeption e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         }
@@ -70,8 +69,5 @@ public class PlayerContoller {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         }
     }
-
-
-
 
 }

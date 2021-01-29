@@ -1,9 +1,10 @@
 package melnikov.qualification.controllers;
 
-import melnikov.qualification.entity.Player;
+
+import melnikov.qualification.entity.Interval;
+import melnikov.qualification.entity.Party;
 import melnikov.qualification.exception.JoinedQualificationExeption;
-import melnikov.qualification.services.PlayerService;
-import melnikov.qualification.specifications.PlayerSpecifications;
+import melnikov.qualification.services.IntervalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.repository.query.QueryCreationException;
@@ -14,48 +15,49 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/players")
-public class PlayerContoller {
+@RequestMapping("/intervals")
+public class IntervalController {
+
     @Autowired
-    private PlayerService service;
+    private IntervalService service;
 
     @GetMapping("/{id}")
-    public Player getByID(@PathVariable int id){
+    public Interval getByID(@PathVariable int id){
         System.out.println("the id for surch= "+id);
-        Optional<Player> optionalPlayer;
+        Optional<Interval> optionalMaster;
         try {
-            optionalPlayer=service.findById(id);
+            optionalMaster=service.findById(id);
         } catch (JoinedQualificationExeption e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
-        return optionalPlayer.get();
+        return optionalMaster.get();
     }
     @PostMapping
-    public Player addPlayer(@RequestBody Player player){
+    public Interval addPlayer(@RequestBody Interval interval){
         try {
-            service.add(player);
+            service.add(interval);
         } catch (QueryCreationException e){
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         }
-        return player;
+        return interval;
     }
 
     @GetMapping
-    public Page<Player> getAll(@RequestParam int page,@RequestParam int size){
-        Page<Player> playerPage = null;
+    public Page<Interval> getAll(@RequestParam int page, @RequestParam int size){
+        Page<Interval> intervalPage = null;
         try {
-            playerPage= service.getByPage(page, size);
+            intervalPage= service.getByPage(page, size);
         }  catch (JoinedQualificationExeption e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
-        return playerPage;
+        return intervalPage;
     }
 
     @PutMapping
-    public Player updatePlayer(@RequestBody Player player){
-        Player updated;
+    public Interval updateMaster(@RequestBody Interval interval){
+        Interval updated;
         try {
-            updated = service.update(player);
+            updated = service.update(interval);
         } catch (JoinedQualificationExeption e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         }
@@ -71,7 +73,15 @@ public class PlayerContoller {
         }
     }
 
-
-
+    @PutMapping("/many/partybyid")
+    public Interval setpartybyidByID(@RequestParam int intervalID, @RequestParam int partyID){
+        Interval updated;
+        try {
+            updated= service.addPartyBuyId(intervalID, partyID);
+        } catch (JoinedQualificationExeption e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+        }
+        return updated;
+    }
 
 }
