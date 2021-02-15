@@ -2,6 +2,8 @@ package melnikov.qualification.services;
 
 
 import melnikov.qualification.auxiliary.MeetingCreator;
+import melnikov.qualification.auxiliary.PartyExcelExporter;
+import melnikov.qualification.auxiliary.mailnotify.AttachmentEmailSender;
 import melnikov.qualification.auxiliary.mailnotify.SimpleEmailSender;
 import melnikov.qualification.entity.Interval;
 import melnikov.qualification.entity.Master;
@@ -10,6 +12,7 @@ import melnikov.qualification.entity.Player;
 import melnikov.qualification.exception.JoinedQualificationExeption;
 import melnikov.qualification.repository.PartyRepository;
 import melnikov.qualification.specifications.PartySpecification;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,7 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.criteria.CriteriaBuilder;
+import javax.mail.MessagingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +32,7 @@ public class PartyService {
     private PlayerService playerService;
     private MasterService masterService;
     private SimpleEmailSender sender;
+    private AttachmentEmailSender sender2;
 
 
     public PartyRepository getRepository() {
@@ -36,11 +40,12 @@ public class PartyService {
     }
 
     @Autowired
-    public PartyService(PartyRepository repository, PlayerService playerService, MasterService masterService,SimpleEmailSender sender) {
+    public PartyService(PartyRepository repository, PlayerService playerService, MasterService masterService,SimpleEmailSender sender,AttachmentEmailSender sender2) {
         this.repository = repository;
         this.playerService = playerService;
         this.masterService = masterService;
         this.sender=sender;
+        this.sender2=sender2;
 
     }
 
@@ -112,6 +117,7 @@ public class PartyService {
             partyList.add(party);
         }
         return partyList;
+
     }
 
     public List<Interval> getPsMtByID(int partyId){
@@ -125,14 +131,42 @@ public class PartyService {
         return mc.getCreatedMeetings();
     }
 
+    public String writeExel(){
+        List<Party> partyList = listALL();
+        PartyExcelExporter excelExporter = new PartyExcelExporter(partyList);
+        String route = excelExporter.export("All1");
+        return route;
+    }
+
+    public String sendPartiesToEmail(String email){
+        EmailValidator validator = EmailValidator.getInstance();
+        if (!validator.isValid(email)){
+            throw new JoinedQualificationExeption("This email is not valid");
+        }
+        String route = writeExel();
+        String reply;
+        try {
+           reply=sender2.sendAttachmentEmail(email,route);
+        } catch (MessagingException e) {
+            throw  new JoinedQualificationExeption(e.getMessage());
+        }
+        return reply;
+    }
+
+
     public void crPsMtByIDNotify(int partyId){
         List<Interval> forThisId = getPsMtByID(partyId);
-        for (Interval interval : forThisId) {
-            Set<Player> playerSet = interval.getAvailableOnes();
-            for (Player player : playerSet) {
-            sender.sendSimpleEmailResponse(player.getEmail(),interval.toString());
+        try {
+            for (Interval interval : forThisId) {
+                Set<Player> playerSet = interval.getAvailableOnes();
+                for (Player player : playerSet) {
+                    sender.sendSimpleEmailResponse(player.getEmail(),interval.toString());
+                }
             }
+        } catch (RuntimeException e){
+            throw new JoinedQualificationExeption(e.getMessage());
         }
+
     }
 
 

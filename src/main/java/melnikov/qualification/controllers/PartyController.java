@@ -112,6 +112,38 @@ public class PartyController {
         }
     }
 
+    @GetMapping("/allaslist")
+    public List<Party> getAllasList(){
+        List<Party> parties;
+        try {
+           parties=service.listALL();
+        } catch (JoinedQualificationExeption e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+        }
+        return parties;
+    }
+    @GetMapping("/writeAllxls")
+    public String response(){
+        String response;
+        try{
+            service.writeExel();
+        } catch (JoinedQualificationExeption e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+        }
+        response = "Success";
+        return response;
+    }
+    @GetMapping("/getemailtable")
+    public  String getAndSendTable(@RequestParam String email){
+        String reply;
+        try {
+            reply=service.sendPartiesToEmail(email);
+        } catch (JoinedQualificationExeption e){
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, e.getMessage(), e);
+        }
+        return reply;
+    }
+
 
 
 }

@@ -4,17 +4,66 @@ package melnikov.qualification;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import melnikov.qualification.auxiliary.MeetingCreator;
+import melnikov.qualification.auxiliary.mailnotify.MyConstants;
 import melnikov.qualification.auxiliary.mailnotify.SimpleEmailSender;
 import melnikov.qualification.entity.Interval;
 import melnikov.qualification.entity.Master;
 import melnikov.qualification.entity.Party;
 import melnikov.qualification.entity.Player;
 
+import javax.mail.*;
+import javax.mail.internet.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Properties;
 
 public class MainDev {
     public static void main(String[] args) {
+        try {
+            checker1();
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    public static void checker1() throws MessagingException {
+        Properties prop = new Properties();
+        prop.put("mail.smtp.auth", true);
+        prop.put("mail.smtp.starttls.enable", "true");
+        prop.put("mail.smtp.host", "smtp.mailtrap.io");
+        prop.put("mail.smtp.port", "25");
+        prop.put("mail.smtp.ssl.trust", "smtp.mailtrap.io");
+
+        Session session = Session.getInstance(prop, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(MyConstants.MY_EMAIL, MyConstants.MY_PASSWORD);
+            }
+        });
+        Message message = new MimeMessage(session);
+        message.setFrom(new InternetAddress("sumkoprig@gmail.com"));
+        message.setRecipients(
+                Message.RecipientType.TO, InternetAddress.parse("sumkoprig@gmail.com"));
+        message.setSubject("Mail Subject");
+
+        String msg = "This is my first email using JavaMailer";
+
+        MimeBodyPart mimeBodyPart = new MimeBodyPart();
+        mimeBodyPart.setContent(msg, "text/html");
+
+        Multipart multipart = new MimeMultipart();
+        multipart.addBodyPart(mimeBodyPart);
+
+        message.setContent(multipart);
+
+        Transport.send(message);
+
+
+    }
+
+    public static void checker2(){
         Master master =  new Master ("Yorrr", "sumkoprig@gmail.com");
         Master m1 = new Master("p1","saranger@inbox.ru");
         Master m2 = new Master("p2","saranger@inbox.ru");
@@ -84,12 +133,6 @@ public class MainDev {
         MeetingCreator mC1 = new MeetingCreator(party0);
         mC1.createMeetings2();
         System.out.println(mC1.getCreatedMeetings());
-
-
-
-
-
-
 
 
     }
